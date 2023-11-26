@@ -1,0 +1,20 @@
+{
+  "name": "code",
+  "version": "1.0.0",
+  "description": "node js code",
+  "main": "index.js",
+  "scripts": {
+    "test": "helo word"
+  },
+  "repository": {
+    "type": "git",
+    "url": "wd201"
+  },
+  "keywords": [
+    "course",
+    "node",
+    "js"
+  ],
+  "author": "me",
+  "license": "ISC"
+}
