@@ -1,4 +1,0 @@
-const sum = () => {
-console.log('printing lol...')
-}
-sum()
