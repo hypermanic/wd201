@@ -3,7 +3,7 @@ const args = require("minimist")(process.argv.slice(2));
 const http = require("http");
 const fs = require("fs");
 
-const port = 3000;
+const port = args.port || 3000;
 
 let homeContent = "";
 let projectContent = "";
@@ -51,4 +51,6 @@ http
   })
 
 
-  .listen(port);
+  .listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+  });
