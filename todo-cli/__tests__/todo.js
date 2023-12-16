@@ -44,7 +44,7 @@ describe("TodoList Test Suite",()=>{
 })
 */
 
-/* eslint-disable no-undef */
+/* eslint-disable no-undef 
 const todoList = require("../todo");
 
 const { add, markAsComplete, all, dueToday, dueLater, overdue } = todoList();
@@ -105,5 +105,61 @@ describe("Todo test suite", () => {
     k = dueLater();
     console.log(k);
     expect(k.length).toBe(2);
+  });
+});
+
+*/
+
+
+const todoList = require("../todo");
+
+const { add, markAsComplete, all, dueToday, dueLater, overdue } = todoList();
+
+describe("Todo test suite", () => {
+  let today, yesterday, tomorrow;
+
+  beforeEach(() => {
+    today = new Date().toISOString().split("T")[0];
+    const dateYesterday = new Date();
+    dateYesterday.setDate(dateYesterday.getDate() - 1);
+    yesterday = dateYesterday.toISOString().split("T")[0];
+    const dateTomorrow = new Date();
+    dateTomorrow.setDate(dateTomorrow.getDate() + 1);
+    tomorrow = dateTomorrow.toISOString().split("T")[0];
+
+    all.length = 0; // Reset the tasks list before each test
+  });
+
+  test("should add new todo", () => {
+    expect(all.length).toBe(0);
+    add({ title: "Submit assignment", dueDate: yesterday, completed: false });
+    expect(all.length).toBe(1);
+  });
+
+  test("should mark a todo as complete", () => {
+    add({ title: "Complete task", dueDate: tomorrow, completed: false });
+    expect(all[0].completed).toBe(false);
+
+    markAsComplete(0);
+
+    expect(all[0].completed).toBe(true);
+  });
+
+  test("should retrieve a todo as due today", () => {
+    add({ title: "Task due today", dueDate: today, completed: false });
+    const todayTasks = dueToday();
+    expect(todayTasks.length).toBe(1);
+  });
+
+  test("should retrieve a todo as overdue", () => {
+    add({ title: "Overdue task", dueDate: yesterday, completed: false });
+    const overdueTasks = overdue();
+    expect(overdueTasks.length).toBe(1);
+  });
+
+  test("should retrieve a todo as later due", () => {
+    add({ title: "Task due later", dueDate: tomorrow, completed: false });
+    const laterDueTasks = dueLater();
+    expect(laterDueTasks.length).toBe(1);
   });
 });

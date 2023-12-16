@@ -1,4 +1,4 @@
-const todoList = () => {
+/*const todoList = () => {
     all = []
     const add = (todoItem) => {
       all.push(todoItem)
@@ -127,4 +127,51 @@ console.log("Due Later")
 let itemsDueLater = todos.dueLater()
 let formattedItemsDueLater = todos.toDisplayableList(itemsDueLater)
 console.log(formattedItemsDueLater)
-console.log("\n\n")
+console.log("\n\n")*/
+const todoList = () => {
+  let all = [];
+
+  const add = (todoItem) => {
+    all.push(todoItem);
+  };
+
+  const markAsComplete = (index) => {
+    all[index].completed = true;
+  };
+
+  const overdue = () => {
+    const today = new Date();
+    return all.filter((todo) => new Date(todo.dueDate) < today && !todo.completed);
+  };
+
+  const dueToday = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return all.filter((todo) => todo.dueDate === today && !todo.completed);
+  };
+
+  const dueLater = () => {
+    const today = new Date().toISOString().split('T')[0];
+    return all.filter((todo) => new Date(todo.dueDate) > new Date(today) && !todo.completed);
+  };
+
+  const toDisplayableList = (list) => {
+    return list
+      .map((todo) => {
+        const status = todo.completed ? '[x]' : '[ ]';
+        return `${status} ${todo.title} ${todo.dueDate}`;
+      })
+      .join('\n');
+  };
+
+  return {
+    all,
+    add,
+    markAsComplete,
+    overdue,
+    dueToday,
+    dueLater,
+    toDisplayableList,
+  };
+};
+
+module.exports = todoList;
