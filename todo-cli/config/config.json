@@ -1,0 +1,24 @@
+{
+  "development": {
+    "username": "postgres",
+    "password": "tlvv123",
+    "database": "todo_db_devp",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "postgres",
+    "password": "tlvv123",
+    "database": "todo_db_tests",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  },
+  "production": {
+    "username": "postgres",
+    "password": "tlvv123",
+    "database": "todo_db_prodq",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+  
+}
