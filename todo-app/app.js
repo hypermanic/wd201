@@ -84,13 +84,17 @@ app.put("/todos/:id", async function (request, response) {
     if (!todo) {
       return response.status(404).json({ error: "Todo not found" });
     }
-    const updatedTodo = await todo.setCompletionStatus(request.body.completed);
+
+    // Toggle the completion status
+    const updatedTodo = await todo.setCompletionStatus(!todo.completed);
+
     return response.json(updatedTodo);
   } catch (error) {
     console.log(error);
     return response.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.delete("/todos/:id", async function (req, response) {
   console.log("We must delete a Todo with ID: ", req.params.id);
