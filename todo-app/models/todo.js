@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.lt]: new Date(),
           },
+          completed: false,
         },
       });
     }
@@ -40,6 +41,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.eq]: new Date(),
           },
+          completed: false,
         },
       });
     }
@@ -50,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
           dueDate: {
             [Op.gt]: new Date(),
           },
+          completed: false,
         },
       });
     }
