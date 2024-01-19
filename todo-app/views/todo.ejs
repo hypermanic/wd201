@@ -1,29 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="<%= csrfToken %>" />
-    <title>Your Todo App</title>
-
-    <!-- Add Tailwind CSS CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen flex flex-col items-center justify-center">
-
-        <h1 class="text-3xl font-bold mb-6">Your Todo App</h1>
-        <%- include("header.ejs") %> 
-         <a href="/signout" class="text-green-600">signout</a>
-
-        <%- include('todos.ejs', { overdue, dueToday, dueLater,csrfToken,completed}) %>
-        <%- include("footer.ejs") %>
-        
-        <% if(messages && messages.error && messages.error.length > 0)  { %>
-            <% for(var i=0; i<messages.error.length; i++) { %>
-              <p><%= messages.error[i] %></p>
-            <% } %>
-          <% } %>
+<a href="/signout">Signout</a>
+<div class="inset-y-0">
+    <div id="count-overdue" class="flex mt-5">
+        <h5 class="w-14 text-black-600 font-semibold ">Overdue</h5>
+        <div
+            class="w-6 h-5 bg-purple-500 rounded-lg-500 flex items-center justify-center rounded border border-gray-900 flex-none ml-3 ">
+            <span class="text-black text-sm">
+                <%= overdueTodos.length %>
+            </span>
+        </div>
     </div>
-</body>
-</html>
+    <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-10">
+        <div class=" text-sm text-blue-700 cursor-pointer">
+            <%- include('Todoss.ejs',{allTodo:overdueTodos}) %>
+        </div>
+    </div>
+    <div id="count-due-today" class="flex mt-5">
+        <h5 class="text-black-600 font-semibold ">Due Today</h5>
+        <div
+            class="w-6 h-5 bg-purple-500 rounded-lg-500 flex items-center justify-center rounded border border-gray-900 flex-none ml-3 ">
+            <span class="text-black text-sm">
+                <%= dueTodayTodos.length %>
+            </span>
+        </div>
+    </div>
+    <div class=" text-sm text-blue-700 cursor-pointer">
+        <%- include('Todoss.ejs',{allTodo:dueTodayTodos}) %>
+    </div>
+    <div id="count-due-later" class="flex mt-5">
+        <h5 class="text-black-600 font-semibold ">Due Later</h5>
+        <div
+            class="w-6 h-5 bg-purple-500 rounded-lg-500 flex items-center justify-center rounded border border-gray-900 flex-none ml-3 ">
+            <span class="text-black text-sm">
+                <%= dueLaterTodos.length %>
+            </span>
+        </div>
+    </div>
+    <div class=" text-sm text-blue-700 cursor-pointer">
+        <%- include('Todoss.ejs',{allTodo:dueLaterTodos}) %>
+    </div>
+
+    <div id="count-completed" class="flex mt-5">
+        <h5 class="text-black-600 font-semibold ">Completed Items</h5>
+        <div
+            class="w-6 h-5 bg-purple-500 rounded-lg-500 flex items-center justify-center rounded border border-gray-900 flex-none ml-3 ">
+            <span class="text-black text-sm">
+                <%= completed.length %>
+            </span>
+        </div>
+    </div>
+    <div class=" text-sm text-blue-700 cursor-pointer">
+        <%- include('Todoss.ejs',{allTodo:completed}) %>
+    </div>
+</div>

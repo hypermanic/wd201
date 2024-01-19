@@ -1,204 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-Token" content="<%= csrfToken %>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Todo Manager</title>
+    <link rel="stylesheet" href="./css/styles.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content")
+        var token = document.querySelector('meta[name="csrf-Token"]').getAttribute("content");
+        // console.log("csrf", token)
         function updateTodo(id) {
-            const bool = document.querySelector(`#todo-checkbox-${id}`).checked;
-            var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content")
-            fetch(`/todos/${id}`, {
-                method: "put",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    completed: bool,
-                    "_csrf": token
+            const checkboxid = document.getElementById(`checkbox${id}`);
+            const tododata = checkboxid.checked;
+            // const tododata = document.querySelector(`#checkbox${id}`).checked //Here # Indicates that what follows is an ID selector.
+
+            fetch(`/todos/${id}`, {  //Route To be send
+                method: "put", //Specefies Methode It can Be any
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ //Gives A request with body
+                    "_csrf": token,
+                    completed: tododata
                 })
             })
                 .then((res) => {
-                    if (res.ok) {
-                        window.location.reload();
+                    if (res.ok) { //checking if response is true
+                        window.location.reload(); //Reload Page
                     }
                 })
-                .catch((err) => console.error(err));
+                .catch((err) => console.log(err)) //Logs Error
         }
-        function deleteTodo(id) {
-             console.log(id) 
-            fetch(`/todos/${id}`, {
+
+        function removeTodo(id) {
+            fetch(`/todos/${id}/delete`, {
                 method: "delete",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ //Gives A request with body
                     "_csrf": token
                 })
             })
                 .then((res) => {
                     if (res.ok) {
-                        window.location.reload();
+                        alert(`Item With Id:${id} Delted Succesfully`);
+                        window.location.reload(); //Reload Page
                     }
                 })
-                .catch((err) => console.error(err));
+                .catch((err) => { console.log(err) })
         }
 
     </script>
-    <title>Document</title>
-
 </head>
+
 <body>
-  <form action="/todos" method="post">
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-    <div class="flex gap-2 mt-5">
-        <div class="flex-auto">
-            <input type="text" name="title" placeholder="What's next?"
-                class="border border-gray
-                -300 rounded text-gray-900 w-full p-2 text-sm h-full mr-2"
-                required />
-        </div>
-        <div class="flex-auto">
-            <input type="date" name="dueDate"
-                class="border border-gray-300 rounded text-black-900 w-full h-full p-2 text-sm mr-2"
-                required />
-        </div>
-        <div class="flex-none">
-            <button type="submit" class="bg-green-600 text-white px-5 py-2 rounded mr-2">Add</button>
+    <div class="header grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+                <form action="/todos" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <div class="flex gap-2 py-4">
+                        <div class="flex-auto">
+                            <input class="border border-slate-400 rounded p-1 text-gray-900 w-full text-sm " type="text"
+                                placeholder="What Next!" name="title" />
+                        </div>
+                        <div class="flex-auto">
+                            <input type="date" name="dueDate"
+                                class="border border-slate-400 rounded p-1 text-gray-900 w-full text-sm leading-4" />
+                        </div>
+                        <div class="flex-none">
+                            <button
+                                class="cursor-pointer transition-all bg-blue-500 text-white px-4 py-1 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] leading-4"
+                                type="submit">Add</button>
+                        </div>
+                    </div>
+                </form>
+                <%- include('notifications.ejs') %>
+                    <!--<div>
+                    <h5>Overdue</h5>
+                    <ul class="list-none">
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100 bg cover">
+                                <input id="checkbox1" type="checkbox"
+                                    class="mr-2 w-4 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox1" class=" text-sm text-blue-700 cursor-pointer">My First
+                                    Task</label>
+                                <a href="#" class="ml-4 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100">
+                                <input id="checkbox2" type="checkbox"
+                                    class="mr-2 w-4 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox2" class=" text-sm text-blue-700 cursor-pointer">My second
+                                    Task</label>
+                                <a href="#" class="ml-2 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                    <h5>Due Today</h5>
+                    <ul class="list-none">
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100">
+                                <input id="checkbox3" type="checkbox"
+                                    class="mr-2 w-4 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox3" class=" text-sm text-blue-700 cursor-pointer">My First
+                                    Task</label>
+                                <a href="#" class="ml-2 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100">
+                                <input id="checkbox4" type="checkbox"
+                                    class="mr-2 w-5 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox4" class=" text-sm text-blue-700 cursor-pointer">My second
+                                    Task</label>
+                                <a href="#" class="ml-2 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                    <h5>Due Later</h5>
+                    <ul class="list-none">
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100">
+                                <input id="checkbox5" type="checkbox"
+                                    class="mr-2 w-4 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox5" class=" text-sm text-blue-700 cursor-pointer">My First
+                                    Task</label>
+                                <a href="#" class="ml-2 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="TodoItem">
+                            <div class="flex w-fit items-center my-2 px-2 py-1 pr-2 rounded hover:bg-gray-100 ">
+                                <input id="checkbox6" type="checkbox"
+                                    class="mr-2 w-4 h-4 dark:border-white-400/20 dark:scale-100 transition-all duration-500 ease-in-out dark:hover:scale-110 dark:checked:scale-100 w-10 h-10" />
+                                <label for="checkbox6" class=" text-sm text-blue-700 cursor-pointer">My second
+                                    Task</label>
+                                <a href="#" class="ml-2 hidden trash-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>-->
         </div>
     </div>
-</form>
+    </div>
+    <div class=" footer grid grid-cols-6 bottom-px">
+        <div class="container col-start-3 col-span-2 ">
+            <%- include('todo.ejs') %>
+        </div>
+    </div>
+    <div class=" footer grid grid-cols-6 bottom-px">
+        <div class=" col-start-3 col-span-2">
+            <%- include('footer.ejs') %>
+        </div>
+    </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-    
-  <div class="mx-auto">
-      <h5 class="text-lg font-bold mb-4">Overdue </h5>(<span id="count-overdue"><%= overdue.length %></span>)
-      <table class="border border-gray-400 my-4 w-full">
-          <thead>
-              <tr>
-                  <th class="border p-2">Title</th>
-
-              </tr>
-          </thead>
-          <tbody>
-              <% overdue.forEach(todo => { %>
-                <tr>
-                    <td class="Todo-Item" >
-                        <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50 ml-5">
-                          <input id="todo-checkbox-<%= todo.dataValues.id  %>" type="checkbox"  <%= todo.dataValues.completed ? "checked":"" %>   onclick="updateTodo(<%= todo.dataValues.id  %>)"
-                              class="w-4 h-4 text-blue-600 bg-gray rounded border-gray-300" >
-                        <label for="todo-checkbox-<%= todo.dataValues.id %>" class="ml-2 text-sm cursor-pointer text-gray-900">
-                      <%= todo.dataValues.title %>
-                  </label>
-                  <a href="#" class=" trash-icon ml-2" onclick=" deleteTodo('<%= todo.dataValues.id %>')" >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
-                          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                  </a>
-                  </td>
-                </tr>
-              <% }); %>
-          </tbody>
-      </table>
-  </div>
-
-  <div class="mx-auto">
-      <h5 class="text-lg font-bold mb-4">Due Today </h5>(<span id="count-due-today"><%= dueToday.length %></span>)
-      <table class="border border-gray-400 my-4 w-full">
-          <thead>
-              <tr>
-                  <th class="border p-2">Title</th>
-
-              </tr>
-          </thead>
-          <tbody>
-              <% dueToday.forEach(todo => { %>
-                <tr>
-                    <td class="Todo-Item" >
-                        <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50 ml-5">
-                        <input id="todo-checkbox-<%= todo.dataValues.id %>" type="checkbox"     <%= todo.dataValues.completed ? 'checked' : '' %>
-                        onclick="updateTodo(<%=todo.dataValues.id %>)"
-                            class="w-4 h-4 text-blue-600 bg-gray rounded border-gray-300">
-                        <label for="todo-checkbox-<%= todo.dataValues.id %>" class="ml-2 text-sm cursor-pointer text-gray-900">
-                      <%= todo.dataValues.title %>
-                  </label>
-                  <a href="#" class=" trash-icon ml-2" onclick=" deleteTodo('<%= todo.dataValues.id %>')" >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
-                          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                  </a>
-                  </td>
-                </tr>
-              <% }); %>
-          </tbody>
-      </table>
-  </div>
-
-  <div class="mx-auto">
-      <h5 class="text-lg font-bold mb-4">Due Later </h5>(<span id="count-due-later"><%= dueLater.length %></span>)
-      <table class="border border-gray-400 my-4 w-full">
-          <thead>
-              <tr>
-                  <th class="border p-2">Title</th>
-              </tr>
-          </thead>
-          <tbody>
-              <% dueLater.forEach(todo => { %>
-                  <tr>
-                    <td class="Todo-Item" >
-                        <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50 ml-5">
-                            <input id="todo-checkbox-<%= todo.dataValues.id  %>" type="checkbox" <%= todo.dataValues.completed  ? "checked" : "" %> onclick= "updateTodo(<%= todo.dataValues.id  %>)"
-                                class="w-4 h-4 text-blue-600 bg-gray rounded border-gray-300" >
-                          <label for="todo-checkbox-<%= todo.dataValues.id %>" class="ml-2 text-sm cursor-pointer text-gray-900">
-                        <%= todo.dataValues.title %>
-                    </label>
-                    <a href="#" class=" trash-icon ml-2" onclick=" deleteTodo('<%= todo.dataValues.id %>')" >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
-                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                        </svg>
-                    </a>
-                    </td>
-                  </tr>
-              <% }); %>
-          </tbody>
-      </table>
-  </div>
-  <div class="mx-auto">
-      <h5 class="text-lg font-bold mb-4">Completed Items</h5>(<span id="count-completed"><%= completed.length %></span>)
-      <table class="border border-gray-400 my-4 w-full">
-          <thead>
-              <tr>
-                  <th class="border p-2">Title</th>
-
-              </tr>
-          </thead>
-          <tbody>
-              <% completed.forEach(todo => { %>
-                <tr>
-                    <td class="Todo-Item" >
-                        <div class="flex items-center w-fit my-2 px-2 py-1 rounded hover:bg-purple-50 ml-5">
-                        <input id="todo-checkbox-<%= todo.dataValues.id %>" type="checkbox" <%= todo.dataValues.completed ? "checked" : "" %> onclick="updateTodo(<%=todo.dataValues.id %>)"
-                            class="w-4 h-4 text-blue-600 bg-gray rounded border-gray-300">
-                        <label for="todo-checkbox-<%= todo.dataValues.id %>" class="ml-2 text-sm cursor-pointer text-gray-900">
-                      <%= todo.dataValues.title %>
-                  </label>
-                  <a href="#" class=" trash-icon ml-2" onclick=" deleteTodo('<%= todo.dataValues.id %>')" >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" 
-                          viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                          <path stroke-linecap="round" stroke-linejoin="round"
-                              d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                      </svg>
-                  </a>
-                  </td>
-                </tr>
-              <% }); %>
-          </tbody>
-      </table>
-  </div>
-</div>
 </body>
+
 </html>

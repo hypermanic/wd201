@@ -1,3 +1,7 @@
-<h5 class="text-3xl font-semibold text-gray-600 mt-1 mb-3 w-full hover:underline hover:text-gray-700">
-    Welcome to Todo Manager
-</h5>
+<% if(messages && messages.error && messages.error.length> 0) { %>
+    <% for(var i=0; i<messages.error.length; i++) { %>
+        <li>
+            <%= messages.error[i] %>
+        </li>
+        <% } %>
+            <% } %>

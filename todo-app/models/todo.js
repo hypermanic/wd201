@@ -7,12 +7,11 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    // eslint-disable-next-line no-unused-vars
     static associate(models) {
-      // define association here
       Todo.belongsTo(models.User, {
         foreignKey: "userId",
       });
+      // define association here
     }
 
     static addTodo({ title, dueDate, userId }) {
@@ -23,79 +22,93 @@ module.exports = (sequelize, DataTypes) => {
         userId,
       });
     }
-
-    markAsCompleted() {
-      return this.update({ completed: true });
+    static getTodo() {
+      return this.findAll();
     }
-
-    static getTodos(userId) {
-      return this.findAll({
+    static deletetodo(id, userId) {
+      return this.destroy({
         where: {
+          id,
           userId,
-        },
-      });
-    }
-    static async overdue(userId) {
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.lt]: new Date(),
-          },
-          userId,
-          completed: false,
-        },
-      });
-    }
-
-    static async dueToday(userId) {
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.eq]: new Date(),
-          },
-          userId,
-          completed: false,
         },
       });
     }
 
     static async dueLater(userId) {
-      return await Todo.findAll({
+      return this.findAll({
         where: {
           dueDate: {
-            [Op.gt]: new Date(),
+            [Op.gt]: new Date().toISOString().split("T")[0],
           },
           userId,
-          completed: false,
+          // completed: false,
         },
+        order: [["id", "ASC"]],
       });
     }
-    setCompletionStatus(bool) {
-      return this.update({ completed: bool });
-    }
 
-    static async remove(id, userId) {
-      return this.destroy({
+    static async overdue(userId) {
+      return this.findAll({
         where: {
-          id: id,
+          dueDate: {
+            [Op.lt]: new Date().toISOString().split("T")[0],
+          },
           userId,
+          // completed: false,
         },
+        order: [["id", "ASC"]],
       });
     }
 
-    static completed(userId) {
+    static async dueToday(userId) {
+      return this.findAll({
+        where: {
+          dueDate: {
+            [Op.eq]: new Date().toISOString().split("T")[0],
+          },
+          userId,
+          // completed: false,
+        },
+        order: [["id", "ASC"]],
+      });
+    }
+
+    static completedItem(userId) {
+      //In order to get only completed Todos
       return this.findAll({
         where: {
           completed: true,
           userId,
         },
+        order: [["id", "ASC"]],
       });
+    }
+    markAsCompleted() {
+      return this.update({ completed: true });
+    }
+    setcompletionstatus(bool) {
+      const notbool = !bool;
+      return this.update({ completed: notbool });
     }
   }
   Todo.init(
     {
-      title: DataTypes.STRING,
-      dueDate: DataTypes.DATEONLY,
+      title: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          notNull: true,
+          len: 5,
+        },
+      },
+      dueDate: {
+        type: DataTypes.DATEONLY,
+        allowNull: false,
+        validate: {
+          notNull: true,
+          len: 5,
+        },
+      },
       completed: DataTypes.BOOLEAN,
     },
     {

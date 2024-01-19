@@ -1,47 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="csrf-token" content="<%= csrfToken %>" />
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+    <meta name="csrf-Token" content="<%= csrfToken %>">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <section class="bg-gray-50 dark:bg-gray-900">
-        <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
-            <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Login
-                    </h1>
-                    <form class="space-y-4 md:space-y-6" action="/session" method="post">
-                        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-                        <div>
-                            <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                            <input type="email" name="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required="">
-                        </div>
-                        <div>
-                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                            <input type="password" name="password" id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"  required="">
-                        </div>
 
-                        <button type="submit" class="w-full text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>
-                        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                            Already have an account? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Login here</a>
-                        </p>
-                    </form>
-                    <% if(messages && messages.error && messages.error.length> 0) { %>
-                        <% for(var i=0; i<messages.error.length; i++) { %>
-                            <li>
-                                <%= messages.error[i] %>
-                            </li>
-                            <% } %>
-                                <% } %>
-                </div>
-            </div>
+<body>
+    <div class="header grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+                <h6>Sign in</h6>
+                <form action="/session" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <div class="py-3">
+                        <label for="email">Email:</label>
+                        <input class="border border-slate-400 rounded p-2 text-gray-900 w-full text-sm leading-4"
+                            type="text" name="email" id="" />
+                    </div>
+                    <div class="py-3">
+                        <label for="password">Password:</label>
+                        <input class="border border-slate-400 rounded p-2 text-gray-900 w-full text-sm leading-4"
+                            type="password" name="password" id="" />
+                    </div>
+                    <div class="py-3">
+                        <button
+                            class="cursor-pointer transition-all bg-blue-500 text-white px-4 py-1 rounded-lg border-blue-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px]border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px] leading-4"
+                            type="submit">Sign in</button>
+                        <a href="/signup">Not a user? Signup</a>
+                    </div>
+                </form>
+                <%- include('notifications.ejs') %>
         </div>
-      </section>
+    </div>
 </body>
-</html>
